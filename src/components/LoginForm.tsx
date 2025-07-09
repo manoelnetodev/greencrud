@@ -1,12 +1,12 @@
 import React, { useState } from 'react';
 import { supabase } from '../lib/supabase';
 import { useAuthStore } from '../store/authStore';
-import { Mail, Lock, UserPlus, LogIn } from 'lucide-react';
+import { Mail, Lock, LogIn } from 'lucide-react'; // Removido UserPlus
 
 const LoginForm: React.FC = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [isSignUp, setIsSignUp] = useState(false);
+  // const [isSignUp, setIsSignUp] = useState(false); // Removido
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const { setUser } = useAuthStore();
@@ -17,38 +17,34 @@ const LoginForm: React.FC = () => {
     setError(null);
 
     try {
-      let authResponse;
-      if (isSignUp) {
-        authResponse = await supabase.auth.signUp({
-          email,
-          password,
-          options: {
-            data: {
-              // You can add initial user profile data here if needed
-              // For example, a default name or avatar_url
-            },
-            emailRedirectTo: `${window.location.origin}/`, // Redirect back to app after email confirmation (if enabled)
-            // disableEmailConfirmation: true, // Keep this true as per instructions
-          },
-        });
-      } else {
-        authResponse = await supabase.auth.signInWithPassword({
+      // let authResponse; // Removido
+      // if (isSignUp) { // Removido
+      //   authResponse = await supabase.auth.signUp({ // Removido
+      //     email, // Removido
+      //     password, // Removido
+      //     options: { // Removido
+      //       data: { // Removido
+      //       }, // Removido
+      //       emailRedirectTo: `${window.location.origin}/`, // Removido
+      //     }, // Removido
+      //   }); // Removido
+      // } else { // Removido
+        const { data, error: authError } = await supabase.auth.signInWithPassword({ // Mantido apenas signInWithPassword
           email,
           password,
         });
-      }
+      // } // Removido
 
-      const { data, error: authError } = authResponse;
+      // const { data, error: authError } = authResponse; // Removido, já desestruturado acima
 
       if (authError) {
         setError(authError.message);
       } else if (data.user) {
         setUser(data.user);
-        // If it's a signup, you might want to show a message about email confirmation
-        // or redirect to a different page if email confirmation is enabled.
       } else {
-        // This case might happen if signup requires email confirmation and no user is returned immediately
-        setError('Verifique seu e-mail para confirmar sua conta.');
+        // Este caso pode acontecer se o signup exigir confirmação de e-mail e nenhum usuário for retornado imediatamente
+        // Como o signup foi removido, esta mensagem pode ser ajustada ou removida se não for mais relevante para o login.
+        setError('Ocorreu um erro inesperado durante o login.');
       }
     } catch (err: any) {
       setError(err.message || 'Ocorreu um erro inesperado.');
@@ -60,7 +56,7 @@ const LoginForm: React.FC = () => {
   return (
     <div className="w-full max-w-md p-8 bg-surface rounded-lg shadow-xl border border-border animate-fade-in">
       <h2 className="text-3xl font-bold text-center text-text mb-6">
-        {isSignUp ? 'Criar Conta' : 'Bem-vindo de volta!'}
+        Bem-vindo de volta! {/* Sempre "Bem-vindo de volta!" */}
       </h2>
 
       {error && (
@@ -109,19 +105,16 @@ const LoginForm: React.FC = () => {
         >
           {loading ? (
             <span className="animate-spin h-5 w-5 border-2 border-white border-t-transparent rounded-full"></span>
-          ) : isSignUp ? (
-            <>
-              <UserPlus className="w-5 h-5" /> Cadastrar
-            </>
           ) : (
             <>
-              <LogIn className="w-5 h-5" /> Entrar
+              <LogIn className="w-5 h-5" /> Entrar {/* Apenas Entrar */}
             </>
           )}
         </button>
       </form>
 
-      <p className="text-center text-textSecondary text-sm mt-6">
+      {/* Removido o parágrafo de "Não tem uma conta? Cadastre-se" */}
+      {/* <p className="text-center text-textSecondary text-sm mt-6">
         {isSignUp ? 'Já tem uma conta?' : 'Não tem uma conta?'}
         <button
           onClick={() => setIsSignUp(!isSignUp)}
@@ -129,7 +122,7 @@ const LoginForm: React.FC = () => {
         >
           {isSignUp ? 'Entrar' : 'Cadastre-se'}
         </button>
-      </p>
+      </p> */}
     </div>
   );
 };

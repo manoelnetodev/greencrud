@@ -1339,12 +1339,6 @@ const QuestaoEditor: React.FC = () => {
                         </p>
                       )}
                     </div>
-                    {activeQuestao.comentario && (
-                      <div className="mt-2 p-3 bg-background rounded-lg border border-border text-sm">
-                        <p className="font-semibold text-text">Comentário:</p>
-                        <p>{activeQuestao.comentario}</p>
-                      </div>
-                    )}
                   </div>
 
                   {!activeQuestao.discursiva && (
@@ -1392,6 +1386,13 @@ const QuestaoEditor: React.FC = () => {
                     <p className="text-textSecondary italic mt-2">
                       Esta questão foi anulada.
                     </p>
+                  )}
+                  {/* MOVIDO: Comentário da Questão */}
+                  {activeQuestao.comentario && (
+                    <div className="mt-4 p-3 bg-background rounded-lg border border-border text-sm">
+                      <p className="font-semibold text-text">Comentário:</p>
+                      <p>{activeQuestao.comentario}</p>
+                    </div>
                   )}
                 </div>
               ) : (

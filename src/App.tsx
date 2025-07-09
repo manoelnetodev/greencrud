@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Routes, Route, Navigate } from 'react-router-dom';
+import { Routes, Route, Navigate, useLocation } from 'react-router-dom';
 import { supabase } from './lib/supabase';
 import Auth from './pages/Auth';
 import Account from './pages/Account';
@@ -7,12 +7,12 @@ import InstitutionsList from './pages/InstitutionsList';
 import ProvasList from './pages/ProvasList';
 import QuestaoEditor from './pages/QuestaoEditor';
 import Header from './components/Header';
-import Footer from './components/Footer';
 import { Session } from '@supabase/supabase-js';
 
 const App: React.FC = () => {
   const [session, setSession] = useState<Session | null>(null);
   const [loading, setLoading] = useState(true);
+  const location = useLocation();
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data: { session } }) => {
@@ -38,9 +38,12 @@ const App: React.FC = () => {
     );
   }
 
+  // Verifica se a rota atual é a página de autenticação
+  const isAuthPage = location.pathname === '/' || location.pathname === '/auth';
+
   return (
     <div className="min-h-screen flex flex-col bg-background text-text">
-      <Header session={session} />
+      {!isAuthPage && <Header />}
       <main className="flex-grow max-w-[1920px] min-w-full mx-auto py-8 px-4">
         <Routes>
           <Route path="/" element={session ? <Navigate to="/instituicoes" /> : <Auth />} />
@@ -57,7 +60,6 @@ const App: React.FC = () => {
           )}
         </Routes>
       </main>
-      <Footer />
     </div>
   );
 };

@@ -1,12 +1,11 @@
 import React, { useState } from 'react';
 import { supabase } from '../lib/supabase';
-import { Mail, Lock, UserPlus, LogIn } from 'lucide-react';
+import { Mail, Lock, LogIn } from 'lucide-react';
 
 const Auth: React.FC = () => {
   const [loading, setLoading] = useState(false);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [isSignUp, setIsSignUp] = useState(false);
   const [message, setMessage] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
 
   const handleLogin = async (e: React.FormEvent) => {
@@ -26,41 +25,22 @@ const Auth: React.FC = () => {
     }
   };
 
-  const handleSignUp = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setLoading(true);
-    setMessage(null);
-
-    try {
-      const { error } = await supabase.auth.signUp({
-        email,
-        password,
-        options: {
-          emailRedirectTo: window.location.origin, // Redireciona para a URL atual após confirmação (se ativada)
-          data: {
-            // Você pode adicionar dados de perfil iniciais aqui, se necessário
-          }
-        }
-      });
-
-      if (error) throw error;
-      setMessage({ type: 'success', text: 'Cadastro realizado com sucesso! Verifique seu e-mail para confirmar sua conta.' });
-      // Opcional: Limpar campos ou redirecionar após o cadastro
-      setEmail('');
-      setPassword('');
-    } catch (error: any) {
-      setMessage({ type: 'error', text: error.message || 'Erro ao cadastrar.' });
-    } finally {
-      setLoading(false);
-    }
-  };
-
   return (
     <div className="flex flex-col items-center justify-center min-h-[calc(100vh-150px)] p-4">
       <div className="bg-surface rounded-xl shadow-2xl p-8 w-full max-w-md border border-border animate-fade-in-up">
-        <h1 className="text-4xl font-extrabold text-center text-text mb-8 leading-tight">
-          {isSignUp ? 'Criar Conta' : 'Bem-vindo de volta!'}
-        </h1>
+        {/* Adição da Logo - Alinhada ao centro */}
+        <div className="flex justify-center mb-6">
+          <img
+            src="https://cdn.weweb.io/designs/89ac3b20-999f-4cbb-a5f8-d6c72de75db6/sections/gc_icon.png?_wwcv=1747853347857"
+            alt="GreenCard Logo"
+            className="w-[80px] h-[80px] object-contain"
+          />
+        </div>
+
+        {/* Título removido */}
+        {/* <h1 className="text-base font-extrabold text-left text-text mb-8 leading-tight">
+          ADMIN GC
+        </h1> */}
 
         {message && (
           <div
@@ -73,7 +53,7 @@ const Auth: React.FC = () => {
           </div>
         )}
 
-        <form onSubmit={isSignUp ? handleSignUp : handleLogin} className="space-y-6">
+        <form onSubmit={handleLogin} className="space-y-6">
           <div>
             <label htmlFor="email" className="sr-only">
               Email
@@ -123,11 +103,7 @@ const Auth: React.FC = () => {
                   <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
                   <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                 </svg>
-                {isSignUp ? 'Cadastrando...' : 'Entrando...'}
-              </>
-            ) : isSignUp ? (
-              <>
-                <UserPlus size={20} /> Cadastrar
+                Entrando...
               </>
             ) : (
               <>
@@ -136,17 +112,6 @@ const Auth: React.FC = () => {
             )}
           </button>
         </form>
-
-        <p className="text-center text-textSecondary mt-6 text-sm">
-          {isSignUp ? 'Já tem uma conta?' : 'Não tem uma conta?'}
-          <button
-            onClick={() => setIsSignUp(!isSignUp)}
-            className="text-primary font-semibold hover:underline ml-1 focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 focus:ring-offset-surface rounded-md"
-            disabled={loading}
-          >
-            {isSignUp ? 'Faça login' : 'Cadastre-se'}
-          </button>
-        </p>
       </div>
     </div>
   );

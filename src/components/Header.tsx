@@ -1,8 +1,9 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
-import { Home, Sun, Moon, LogOut, ChevronDown, ArrowUpRight } from 'lucide-react'; // Adicionado ArrowUpRight
+import { Home, LogOut, ChevronDown } from 'lucide-react';
 import { useUserProfile } from '../hooks/useUserProfile';
 import { useAuthStore } from '../store/authStore';
+// import { supabase } from '../lib/supabase'; // Não é mais necessário se os breadcrumbs dinâmicos forem removidos
 
 const Header: React.FC = () => {
   const { profile, loading: profileLoading } = useUserProfile();
@@ -11,8 +12,69 @@ const Header: React.FC = () => {
   const navigate = useNavigate();
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
 
-  // Extrai os segmentos da URL para os breadcrumbs
+  // Estados para os nomes dinâmicos dos breadcrumbs (REMOVIDOS)
+  // const [institutionDisplayName, setInstitutionDisplayName] = useState<string | null>(null);
+  // const [provaDisplayName, setProvaDisplayName] = useState<string | null>(null);
+  // const [breadcrumbsLoading, setBreadcrumbsLoading] = useState(false);
+
+  // Extrai os segmentos da URL para os breadcrumbs (ainda pode ser útil para outras lógicas, mas não para breadcrumbs)
   const pathnames = location.pathname.split('/').filter((x) => x);
+
+  // Efeito para buscar os nomes da instituição e prova (REMOVIDO)
+  // useEffect(() => {
+  //   const fetchDisplayNames = async () => {
+  //     setBreadcrumbsLoading(true);
+  //     setInstitutionDisplayName(null);
+  //     setProvaDisplayName(null);
+
+  //     let currentInstitutionId: string | null = null;
+  //     let currentProvaId: string | null = null;
+
+  //     for (let i = 0; i < pathnames.length; i++) {
+  //       if (pathnames[i] === 'instituicoes' && pathnames[i + 1]) {
+  //         currentInstitutionId = pathnames[i + 1];
+  //       }
+  //       if (pathnames[i] === 'provas' && pathnames[i + 1]) {
+  //         currentProvaId = pathnames[i + 1];
+  //       }
+  //     }
+
+  //     const fetches: Promise<any>[] = [];
+
+  //     if (currentInstitutionId && !isNaN(Number(currentInstitutionId))) {
+  //       fetches.push(
+  //         supabase
+  //           .from('instituicoes')
+  //           .select('nome')
+  //           .eq('id', parseInt(currentInstitutionId))
+  //           .single()
+  //           .then(({ data, error }) => {
+  //             if (error) console.error('Error fetching institution name:', error);
+  //             setInstitutionDisplayName(data?.nome || null);
+  //           })
+  //       );
+  //     }
+
+  //     if (currentProvaId && !isNaN(Number(currentProvaId))) {
+  //       fetches.push(
+  //         supabase
+  //           .from('provas')
+  //           .select('nome')
+  //           .eq('id', parseInt(currentProvaId))
+  //           .single()
+  //           .then(({ data, error }) => {
+  //             if (error) console.error('Error fetching prova name:', error);
+  //             setProvaDisplayName(data?.nome || null);
+  //           })
+  //       );
+  //     }
+
+  //     await Promise.all(fetches);
+  //     setBreadcrumbsLoading(false);
+  //   };
+
+  //   fetchDisplayNames();
+  // }, [location.pathname, pathnames]);
 
   // Função para obter as iniciais do nome para o avatar padrão
   const getInitials = (name: string | null) => {
@@ -27,26 +89,22 @@ const Header: React.FC = () => {
     navigate('/');
   };
 
-  // Estado e função para o toggle de tema (apenas visual por enquanto)
-  const [isDarkMode, setIsDarkMode] = useState(true); // Assumindo dark mode como padrão
-  const toggleTheme = () => {
-    setIsDarkMode(!isDarkMode);
-    // Em uma aplicação real, você atualizaria um estado de tema global ou adicionaria/removeria uma classe do <html>
-  };
-
   return (
     <header className="bg-surface border-b border-border py-4 px-4 sm:px-8 flex items-center justify-between shadow-lg">
-      {/* Seção Esquerda: Logo/Marca e Breadcrumbs */}
+      {/* Seção Esquerda: Logo/Marca */}
       <div className="flex items-center gap-6">
         {/* Logo/Marca */}
         <Link to="/instituicoes" className="flex items-center gap-2 text-primary hover:text-primary/90 transition-colors">
-          <div className="relative w-8 h-8 rounded-full bg-white flex items-center justify-center shadow-md">
-            <ArrowUpRight className="w-4 h-4 text-brand-green" strokeWidth={2.5} />
-          </div>
+          <img
+            src="https://cdn.weweb.io/designs/89ac3b20-999f-4cbb-a5f8-d6c72de75db6/sections/gc_icon.png?_wwcv=1747853347857"
+            alt="GreenCard Logo"
+            className="w-[50px] h-[50px] object-contain"
+          />
           <span className="text-2xl font-bold tracking-tight hidden sm:block">GreenCard</span>
         </Link>
 
-        {/* Breadcrumbs */}
+        {/* Breadcrumbs (REMOVIDO) */}
+        {/*
         <nav className="hidden md:flex text-textSecondary text-sm items-center space-x-2">
           <Link to="/instituicoes" className="hover:text-primary transition-colors flex items-center">
             <Home className="w-4 h-4 inline-block mr-1" />
@@ -55,36 +113,41 @@ const Header: React.FC = () => {
           {pathnames.map((name, index) => {
             const routeTo = `/${pathnames.slice(0, index + 1).join('/')}`;
             const isLast = index === pathnames.length - 1;
-            // Formatação básica do nome para exibição
-            const displayName = name.charAt(0).toUpperCase() + name.slice(1).replace(/-/g, ' ');
+            let displayName = name.charAt(0).toUpperCase() + name.slice(1).replace(/-/g, ' ');
+
+            if (name === 'instituicoes') {
+              displayName = 'Instituições';
+            } else if (name === 'provas') {
+              displayName = 'Provas';
+            } else if (name === 'questoes') {
+              displayName = 'Questões';
+            } else if (pathnames[index - 1] === 'instituicoes' && !isNaN(Number(name))) {
+              displayName = institutionDisplayName || name;
+            } else if (pathnames[index - 1] === 'provas' && !isNaN(Number(name))) {
+              displayName = provaDisplayName || name;
+            }
 
             return (
-              <span key={name} className="flex items-center">
+              <span key={routeTo} className="flex items-center">
                 <span className="mx-1">/</span>
                 {isLast ? (
-                  <span className="text-text font-medium">{displayName}</span>
+                  <span className="text-text font-medium">
+                    {breadcrumbsLoading ? 'Carregando...' : displayName}
+                  </span>
                 ) : (
                   <Link to={routeTo} className="hover:text-primary transition-colors">
-                    {displayName}
+                    {breadcrumbsLoading ? 'Carregando...' : displayName}
                   </Link>
                 )}
               </span>
             );
           })}
         </nav>
+        */}
       </div>
 
-      {/* Seção Direita: Toggle de Tema, Perfil do Usuário */}
+      {/* Seção Direita: Perfil do Usuário */}
       <div className="flex items-center gap-4">
-        {/* Toggle de Tema */}
-        <button
-          onClick={toggleTheme}
-          className="p-2 rounded-full text-textSecondary hover:bg-border hover:text-primary transition-colors focus:outline-none focus:ring-2 focus:ring-primary"
-          aria-label={isDarkMode ? 'Mudar para modo claro' : 'Mudar para modo escuro'}
-        >
-          {isDarkMode ? <Sun className="w-5 h-5" /> : <Moon className="w-5 h-5" />}
-        </button>
-
         {/* Dropdown do Perfil do Usuário */}
         <div className="relative">
           <button

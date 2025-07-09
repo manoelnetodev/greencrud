@@ -182,7 +182,7 @@ const ProvasList: React.FC = () => {
           >
             <ArrowLeft className="w-6 h-6" />
           </button>
-          <h1 className="text-4xl font-extrabold text-text leading-tight">Provas da <span className="text-primary">{institution.nome}</span></h1>
+          <h1 className="text-base font-extrabold text-text leading-tight">Provas da <span className="text-primary">{institution.nome}</span></h1>
         </div>
         <button
           onClick={() => {
@@ -212,8 +212,8 @@ const ProvasList: React.FC = () => {
               <div className="flex items-center gap-4 flex-grow"> {/* Removed cursor-pointer and onClick */}
                 <BookOpen className="w-6 h-6 text-primary flex-shrink-0" />
                 <div className="flex flex-col sm:flex-row sm:items-center sm:gap-6 flex-wrap">
-                  <h3 className="text-lg font-semibold text-text flex-shrink-0">{prova.nome}</h3>
-                  <div className="flex items-center gap-4 text-sm text-textSecondary mt-1 sm:mt-0">
+                  <h3 className="text-base font-semibold text-text flex-shrink-0">{prova.nome}</h3>
+                  <div className="flex items-center gap-4 text-xs text-textSecondary mt-1 sm:mt-0">
                     <p>Ano: <span className="font-medium text-text">{prova.ano}</span></p>
                     <p>Foco: <span className="font-medium text-text">{TIPO_DE_FOCO_OPTIONS.find(opt => opt === prova.tipo_de_foco) || prova.tipo_de_foco}</span></p>
                     <p>UF: <span className="font-medium text-text">{prova.uf}</span></p>
