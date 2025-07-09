@@ -1,42 +1,18 @@
 import React, { useState, useEffect } from 'react';
 import { X, Plus, Trash2, CheckCircle, Circle } from 'lucide-react';
-
-// Interfaces para o estado do formulário, permitindo null para campos opcionais
-interface AlternativaForm {
-  id: number | null; // null para novas alternativas, number para existentes
-  alternativa_txt: string;
-  correta: boolean;
-  comentario: string | null;
-  imagens: string[] | null;
-}
-
-interface QuestaoForm {
-  id: number | null;
-  enunciado: string;
-  comentario: string | null;
-  numero: number | null;
-  discursiva: boolean;
-  ano: string | null;
-  dif_q: string | null;
-  foco: string | null;
-  assunto: number | null;
-  categoria: number | null;
-  subcategoria: number | null;
-  imagens_enunciado: string[] | null;
-  alternativas: AlternativaForm[];
-}
+import { QuestaoFormData, AlternativaForm } from '../types'; // Import from types
 
 interface QuestaoFormModalProps {
   isOpen: boolean;
   onClose: () => void;
-  onSave: (questaoData: QuestaoForm) => Promise<void>; // Callback para salvar no pai
+  onSave: (questaoData: QuestaoFormData) => Promise<void>; // Callback para salvar no pai
   provaId: number;
   institutionId: number; // Necessário para criar/editar a questão
-  questao?: QuestaoForm | null; // Questão para edição (opcional)
+  questao?: QuestaoFormData | null; // Questão para edição (opcional)
 }
 
 const QuestaoFormModal: React.FC<QuestaoFormModalProps> = ({ isOpen, onClose, onSave, provaId, institutionId, questao }) => {
-  const [formData, setFormData] = useState<QuestaoForm>({
+  const [formData, setFormData] = useState<QuestaoFormData>({
     id: null,
     enunciado: '',
     comentario: null,
@@ -78,6 +54,8 @@ const QuestaoFormModal: React.FC<QuestaoFormModalProps> = ({ isOpen, onClose, on
             comentario: alt.comentario || null,
             correta: alt.correta,
             imagens: alt.imagens || null,
+            newFiles: [], // Ensure newFiles is initialized for existing alternatives
+            removedUrls: [], // Ensure removedUrls is initialized
           })),
         });
         // Garantir que o nextAltId seja único e negativo para novas alternativas
@@ -142,7 +120,7 @@ const QuestaoFormModal: React.FC<QuestaoFormModalProps> = ({ isOpen, onClose, on
       ...prev,
       alternativas: [
         ...prev.alternativas,
-        { id: nextAltId, alternativa_txt: '', correta: false, comentario: null, imagens: null },
+        { id: nextAltId, alternativa_txt: '', correta: false, comentario: null, imagens: null, newFiles: [], removedUrls: [] },
       ],
     }));
     setNextAltId(prev => prev - 1);
@@ -180,7 +158,7 @@ const QuestaoFormModal: React.FC<QuestaoFormModalProps> = ({ isOpen, onClose, on
     }
     setIsSaving(true);
     try {
-      await onSave({ ...formData, prova: provaId, instituicao: institutionId } as QuestaoForm); // Pass provaId and institutionId
+      await onSave({ ...formData, prova: provaId, instituicao: institutionId } as QuestaoFormData); // Pass provaId and institutionId
       onClose(); // Fechar modal após salvar
     } catch (err: any) {
       // Erro já tratado no componente pai (QuestaoEditor)
