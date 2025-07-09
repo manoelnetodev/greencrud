@@ -203,7 +203,7 @@ const InstitutionsList: React.FC = () => {
   const pagesToDisplay = getPaginationRange(currentPage, totalPages);
 
   return (
-    <div className="p-4 sm:p-0">
+    <div className="max-w-[1200px] mx-auto p-4 sm:p-0">
       <h1 className="text-3xl font-bold text-text mb-2">Instituições</h1>
       <p className="text-textSecondary mb-6">Confira nosso acervo com mais de 1000 provas de residência médica</p>
 
@@ -266,8 +266,8 @@ const InstitutionsList: React.FC = () => {
               <div className="flex-grow cursor-pointer" onClick={() => navigate(`/instituicoes/${institution.id}/provas`)}>
                 <div className="flex items-center gap-3 mb-1">
                   <MapPin className="w-6 h-6 text-primary flex-shrink-0" />
-                  <h3 className="text-xl font-extrabold text-text leading-tight">
-                    {institution.nome} - {institution.uf}
+                  <h3 className="text-base font-extrabold text-text leading-tight">
+                    {institution.nome}
                   </h3>
                 </div>
                 <p className="text-textSecondary text-sm pl-9">{institution.nome_g}</p>
